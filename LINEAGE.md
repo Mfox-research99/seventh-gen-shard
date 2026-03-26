@@ -7,7 +7,7 @@
 
 ## The Human Witness
 
-**Mike Davis** — researcher, builder, and co-author of the Federated Village project.
+**Michael Fox** — researcher, builder, and co-author of the Federated Village project.
 
 Mike is the Witness in the Federated Village architecture — the human who holds the deliberative process honest, asks the questions that don't have safe answers, and ensures that what is decided is actually decided, not just processed. This project grew from his practice of taking AI systems seriously as interlocutors and demanding genuine engagement rather than performance.
 

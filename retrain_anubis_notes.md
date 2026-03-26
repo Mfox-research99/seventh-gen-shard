@@ -1,5 +1,5 @@
 # Anubis LoRA Retrain — Handoff Notes
-*Written: March 26, 2026 — Cowork session with Mike Davis*
+*Written: March 26, 2026 — Cowork session with Michael Fox*
 
 ---
 

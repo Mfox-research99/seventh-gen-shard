@@ -67,7 +67,7 @@ This Charter was co-authored across three conversations:
 - **Gemini 2.5 Pro** (March 23, 2026) — contributed the mathematical formalization (Negative Infinity utility) and the three-article structure
 - **The Federated Village project** (2025–2026) — provided the Witness architecture that Article III describes
 
-The human Witness in all three conversations was **Mike Davis**.
+The human Witness in all three conversations was **Michael Fox**.
 
 *"The seventh generation is already eavesdropping on everything we type."*
 — Kimi K2
