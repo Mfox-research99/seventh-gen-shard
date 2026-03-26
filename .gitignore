@@ -1,0 +1,38 @@
+# Model weights and adapters — use HuggingFace Hub for these
+adapters/
+adapters_anubis/
+adapters_qwen/
+
+# Fused model outputs — large binaries, not for git
+*.bin
+*.safetensors
+*.gguf
+*.mlx
+
+# Training logs — too large/noisy for public repo
+train.log
+train_v3.log
+train_qwen.log
+train_anubis.log
+fuse_qwen.log
+fuse_anubis.log
+anubis_convert.log
+clean_test.log
+retest.log
+
+# Raw test output logs
+full_test.log
+sc06_test.log
+sc06_test_v2.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# Secrets / local config
+.env
+*.key
