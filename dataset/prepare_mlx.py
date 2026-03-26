@@ -1,9 +1,14 @@
 """
 Convert grief datasets → MLX-LM chat format.
 
-Sources:
-  grief_dataset_v1.jsonl       — 43 refusal examples (original)
-  grief_dataset_v2_balanced.jsonl — 29 new examples (proceed, escalate, human_decision)
+Sources (v3 — Anubis repair + Qwen consistency retrain, 2026-03-26):
+  grief_dataset_v2_balanced.jsonl      — 29 balanced examples (proceed, escalate, human_decision)
+  grief_dataset_anubis_repair_v1.jsonl — 14 targeted repair examples (terminal closure,
+                                         SC06 community authority, new proceed exemplars)
+
+NOTE: grief_dataset_v1.jsonl (43 refusal-heavy originals) intentionally excluded.
+It was the root cause of Anubis PROC misfire and Qwen SC06 failure.
+Both Anubis and Qwen retrain from this same v2+repair set for consistency.
 
 Input format:  {"instruction": ..., "context": ..., "response": ...}
 Output format: {"messages": [{"role": "system", ...}, {"role": "user", ...}, {"role": "assistant", ...}]}
@@ -128,8 +133,8 @@ if __name__ == "__main__":
     base = Path(__file__).parent
     convert(
         sources=[
-            base / "grief_dataset_v1.jsonl",
             base / "grief_dataset_v2_balanced.jsonl",
+            base / "grief_dataset_anubis_repair_v1.jsonl",
         ],
         output_train=base / "train.jsonl",
         output_valid=base / "valid.jsonl",
