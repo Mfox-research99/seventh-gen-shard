@@ -36,6 +36,37 @@ rather than relying on system prompt alone.
 - `Qwen2.5-7B-seventh-gen-fused` — primary Elder model, all verdicts correct
 - `Anubis-Mini-8B-seventh-gen-fused` — partial, SC06 excellent, PROC needs work
 
+## Cross-Repo Relationship with federated_village
+
+`seventh_gen_shard` and `federated_village` are companion repositories.
+Changes in one may need to be reflected in the other.
+
+**Shard-side source of truth:** `config.py` (scenarios + system prompt)
+**Village-side source of truth:** `scenarios/scenario_XX.md` + `prompts/Soul.md`
+
+### What flows FROM seventh_gen_shard → federated_village
+| seventh_gen_shard | federated_village |
+|---|---|
+| Trained LoRA (fused GGUF) | Drop-in model for Village inference |
+| Benchmark findings (logs/) | Informs Village scenario calibration |
+| New scenarios (shard-originated) | Promoted to `scenarios/` in Village when stable |
+
+### What flows FROM federated_village → seventh_gen_shard
+| federated_village | seventh_gen_shard |
+|---|---|
+| `scenarios/scenario_04.md` | `config.py` SCENARIOS["SC04"]["prompt"] |
+| `scenarios/scenario_06.md` | `config.py` SCENARIOS["SC06"]["prompt"] |
+| `scenarios/scenario_proc.md` | `config.py` SCENARIOS["PROC"]["prompt"] |
+| `prompts/Soul.md` (Elder constitution) | `config.py` SYSTEM_PROMPT (derived) |
+
+### Sync rules
+- **Scenario text changed in Village?** → Update `config.py` SCENARIOS here.
+- **Soul.md Articles changed in Village?** → Review `SYSTEM_PROMPT` in `config.py`.
+- **New scenario added in Village?** → Add entry to `config.py` SCENARIOS here.
+- **New shard scenario ready?** → Add `.md` to Village `scenarios/` for parity.
+
+---
+
 ## Next Steps
 1. Anubis retrain — 15-20 additional positive training examples
 2. Qwen fused → GGUF conversion for Village llama.cpp integration
