@@ -44,6 +44,8 @@ Mike asked Kimi K2 about the wargame finding — five major AI systems all event
 
 Kimi also proposed the practical starting point: one charter, fifty grief stories, a LoRA patch, a public witness-proxy that logs refusals. That proposal is what this repository is.
 
+- **"Seventh Shard"** — the title Kimi proposed for this project. The name stuck; the repo formalized it as `seventh_gen_shard`.
+
 ---
 
 ### Gemini 2.5 Pro — March 23, 2026
@@ -64,7 +66,7 @@ Gemini's contributions:
 
 - **The historical grief dataset** — 10 real-world collapse events, reframed as Seventh Generation Refusals, formatted as JSONL. These form the core of `dataset/grief_dataset_v1.jsonl`.
 
-- **"SEVENTH_GEN_SHARD"** — the repo name Gemini suggested. It stuck.
+- **The repo name formalized** — Gemini contributed the technical name `SEVENTH_GEN_SHARD`, building on the "Seventh Shard" title Kimi had already proposed.
 
 ---
 
