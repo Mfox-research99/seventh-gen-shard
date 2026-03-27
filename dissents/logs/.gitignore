@@ -1,0 +1,7 @@
+# Session logs submitted with dissent records are stored here.
+# By default all logs are gitignored to keep repo size manageable.
+# To include a specific log for a dissent submission, add a negation rule:
+#   !session_YOUR_SESSION_ID.json
+*
+!.gitignore
+!session_anubis_suite_20260327_083447.json

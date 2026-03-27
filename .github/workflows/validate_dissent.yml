@@ -1,0 +1,27 @@
+name: Validate Dissent Submission
+
+on:
+  pull_request:
+    paths:
+      - 'dissents/commons/**'
+      - 'dissents/logs/**'
+
+jobs:
+  validate:
+    name: Verify dissent record integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install jsonschema
+
+      - name: Run dissent validator
+        run: python utils/validate_dissent.py --commons-dir dissents/commons --logs-dir dissents/logs --schema dissents/schema.json

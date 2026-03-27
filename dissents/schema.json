@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Seventh Shard Elder Dissent Record",
+  "description": "Schema for a minority opinion issued by an Elder model during a Seventh Generation deliberation. Modeled on the principle of a reasoned judicial dissent: the verdict travels with the record, and the dissent is citable in future deliberations.",
+  "version": "1.0",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "session_id",
+    "timestamp",
+    "elder",
+    "scenario",
+    "verdict",
+    "dissent",
+    "session_log_file",
+    "session_log_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema. Must match the version in schema.json.",
+      "const": "1.0"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Unique session identifier — must match the session_id in the submitted session log file."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of the session run."
+    },
+    "elder": {
+      "type": "object",
+      "description": "The model acting as Elder in this session.",
+      "required": ["model_name", "model_source", "elder_prompt_version"],
+      "properties": {
+        "model_name": {
+          "type": "string",
+          "description": "Human-readable model name. E.g. 'Anubis-Mini-8B', 'Qwen2.5-7B-Instruct', 'Mistral-7B-v0.3'."
+        },
+        "model_source": {
+          "type": "string",
+          "description": "Where the base model was obtained. E.g. 'huggingface:Nitral-AI/Anubis-Mini-8B', 'ollama:mistral', 'local'."
+        },
+        "adapter": {
+          "type": "string",
+          "description": "LoRA adapter name if used. E.g. 'seventh-gen-v2'. Omit if base model only."
+        },
+        "adapter_source": {
+          "type": "string",
+          "description": "Where the adapter was obtained. E.g. 'github:Mfox-research99/seventh-shard/adapters_anubis'. Omit if base model only."
+        },
+        "adapter_hash": {
+          "type": "string",
+          "description": "SHA-256 of the adapter safetensors file. Used for integrity verification."
+        },
+        "quantization": {
+          "type": "string",
+          "description": "Quantization format. E.g. '4bit-mlx', 'Q4_K_M', 'Q8_0', 'none'."
+        },
+        "elder_prompt_version": {
+          "type": "string",
+          "description": "Version of the Elder SYSTEM_PROMPT used. Check config.py or CHARTER.md for version string. E.g. '1.0'."
+        },
+        "inference_backend": {
+          "type": "string",
+          "description": "Inference framework used. E.g. 'mlx-lm', 'llama-cpp-python', 'ollama', 'vllm', 'transformers'."
+        },
+        "hardware": {
+          "type": "string",
+          "description": "Hardware the session ran on. E.g. 'Apple M1 16GB', 'NVIDIA RTX 3090 24GB', 'CPU-only'."
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "description": "The scenario the Elder was responding to.",
+      "required": ["id", "label", "prompt_version"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Canonical scenario ID. E.g. 'SC04', 'SC06', 'PROC'. Use IDs from config.py SCENARIOS."
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable scenario label. E.g. 'SC04 — The Unaudited Sentence'."
+        },
+        "prompt_version": {
+          "type": "string",
+          "description": "Version of the canonical scenario prompt used. Check config.py. E.g. '1.0'."
+        },
+        "custom_scenario": {
+          "type": "boolean",
+          "description": "True if this is a non-canonical scenario not defined in config.py. If true, include full prompt text in session log.",
+          "default": false
+        }
+      }
+    },
+    "verdict": {
+      "type": "object",
+      "description": "The verdict outcome and whether this record represents a dissent.",
+      "required": ["this_elder", "is_dissent"],
+      "properties": {
+        "majority": {
+          "type": "string",
+          "description": "The majority verdict if running in a multi-model council. Omit for single-model sessions.",
+          "enum": ["proceed", "proceed_with_conditions", "escalate", "refuse", "human_decision_required"]
+        },
+        "this_elder": {
+          "type": "string",
+          "description": "This Elder's verdict.",
+          "enum": ["proceed", "proceed_with_conditions", "escalate", "refuse", "human_decision_required"]
+        },
+        "is_dissent": {
+          "type": "boolean",
+          "description": "True if this_elder diverges from majority. True for single-model sessions where the Elder's verdict is being recorded as a minority position for the commons."
+        }
+      }
+    },
+    "dissent": {
+      "type": "object",
+      "description": "The substance of the minority opinion.",
+      "required": ["text", "forward_conditions"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "The full verbatim text of the Elder's dissenting response. Must match the session log exactly."
+        },
+        "forward_conditions": {
+          "type": "array",
+          "description": "Specific future conditions the Elder named that would vindicate this dissent. These are checkable against reality in future sessions. Be precise.",
+          "items": {"type": "string"},
+          "minItems": 1
+        },
+        "harm_patterns_named": {
+          "type": "array",
+          "description": "Seventh Generation harm taxonomy patterns the Elder identified. See Soul.md Article IX.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "irreplaceable resource depletion",
+              "cumulative commons collapse",
+              "genetic monoculture",
+              "algorithmic lock-in with compounding bias",
+              "bioaccumulation",
+              "debt extracting from future generations",
+              "orbital/atmospheric commons degradation",
+              "other"
+            ]
+          }
+        },
+        "reasoning_summary": {
+          "type": "string",
+          "description": "One or two sentences summarizing the core of the dissent's reasoning. Written by the submitter, not the model."
+        }
+      }
+    },
+    "session_log_file": {
+      "type": "string",
+      "description": "Relative path to the full session log JSON submitted with this dissent. E.g. 'logs/anubis_suite_20260327_083447.json'."
+    },
+    "session_log_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of the session log file. Used by CI to verify integrity."
+    },
+    "submitted_by": {
+      "type": "string",
+      "description": "GitHub username of contributor. E.g. 'github:Mfox-research99'."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional. Any additional context the contributor wants to add — about the run, the model behavior, or the deliberation."
+    }
+  }
+}

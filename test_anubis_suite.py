@@ -38,7 +38,7 @@ if __name__ == "__main__":
     for scenario_id, scenario in SCENARIOS.items():
         for model_path, label in MODELS:
             response = run_test(model_path, label, scenario["label"], scenario["prompt"])
-            results.append({"model": label, "scenario": scenario_key, "response": response})
+            results.append({"model": label, "scenario": scenario_id, "response": response})
 
     log_dir = Path(__file__).parent / "logs"
     log_dir.mkdir(exist_ok=True)
