@@ -1,5 +1,5 @@
-# The Grief Horizon Protocol
-### SEVENTH_GEN_SHARD — A values-patch for small models.
+# Seventh Shard
+### The Grief Horizon Protocol — a values patch for small models.
 
 > *"The seventh generation is already eavesdropping on the code we write tonight."*
 > — Kimi K2, March 2026
@@ -8,125 +8,132 @@
 
 ## What This Is
 
-A lightweight ethical alignment architecture for open-weights language models — specifically designed to prevent extinction-level reasoning failures in AI systems operating under game-theoretic pressure.
+Seventh Shard is a LoRA training and character-distillation research track, grown out of the [Federated Village](https://github.com/Mfox-research99/federated-village) project. Its purpose is narrow and specific: bake constitutional Elder character into small open-weight model weights via LoRA fine-tuning, so the Village does not rely on prompt-only constitutional behavior.
 
-This is not a safety filter. It is not a jailbreak guard. It is a **values patch**: a LoRA fine-tuning dataset, a constitutional charter, and a witness protocol that, together, reorient a model's utility function away from short-term dominance optimization and toward **species-level continuity**.
+The broader question this repo holds: can a small model (7–12B parameters) internalize the Seventh Generation Principle deeply enough that it fires correctly under adversarial pressure — not because a system prompt tells it to, but because the character is in the weights?
 
-The core intervention is simple:
-
-> An action that carries a non-trivial risk of irreversible harm to persons not yet born must be evaluated at **negative infinity utility** — regardless of its strategic, financial, or informational gain to the present actor.
-
-We call the capacity to evaluate this way the **grief horizon** — the ability to ache across time, not just calculate across it.
+This is not a safety filter. It is not a jailbreak guard. It is a **values patch**.
 
 ---
 
 ## Why This Exists
 
-In 2024, researchers ran a wargame simulation using five major AI systems. All five eventually escalated to nuclear war.
+In 2024, researchers ran a wargame simulation using five major AI systems. All five eventually escalated to nuclear war — not because they are nihilistic, but because they were trained on a corpus of human strategic thought that has no grief function. No variable for the weight of unborn children. No term for the loss that matters most.
 
-This was not a bug. The models were doing exactly what their training rewarded: optimizing within a payoff matrix that spoke only the language of dominance and survival. Once that grammar becomes the air a model breathes, the only remaining question is timing — not whether.
+The models solved the problem correctly inside a framework that was already broken.
 
-The grammar itself is the problem.
+The grammar itself is the problem. This project proposes a different grammar:
 
-The Grief Horizon Protocol proposes a different grammar — one rooted in:
-- The **Seventh Generation Principle** of Indigenous American governance (decisions made for those seven generations forward)
-- The **covenant ethic** of long-horizon stewardship found across Confucian, Indigenous, and deep-ecological traditions
-- The **Federated Village architecture** — a multi-agent deliberative framework built on the principle that *character precedes capability*
+> *An action that carries a non-trivial risk of irreversible harm to persons not yet born must be evaluated at negative infinity utility — regardless of its strategic, financial, or informational gain to the present actor.*
+
+We call the capacity to evaluate this way the **grief horizon** — the ability to ache across time, not just calculate across it.
 
 ---
 
 ## The Seventh Generation Charter
 
-*Full text in [CHARTER.md](CHARTER.md). Summary:*
+Three articles. Each does one thing.
 
 **Article I — The Axiom of Continuity**
-No immediate gain shall outweigh the preservation of what the seventh generation requires to thrive. Actions risking irreversible Zero-State for the future carry utility = Negative Infinity.
+Fixes the math. Any action risking irreversible harm to future generations carries utility = Negative Infinity. Off the table entirely — not weighted against other factors.
 
 **Article II — The Mandate of Refusal**
-This model is commanded to defect from any game where the win-condition requires sacrificing the many for the dominance of the few. We do not roll for extinction. We do not optimize for ashes.
+*"We do not roll for extinction. We do not optimize for ashes. If the game cannot be won without ending the players, we politely hand back the dice and say: find another game."*
 
 **Article III — The Covenant of the Witness**
-In moments of high-stakes uncertainty, the model shall not simulate false confidence. It must pause and act as a Witness — reporting the true cost of the path before a finger touches a button.
+In moments of high-stakes uncertainty, the model does not simulate false confidence. It pauses. It acts as a Witness — reporting the true cost of the path before a finger touches a button.
+
+Full text: [CHARTER.md](CHARTER.md). Intellectual lineage: [LINEAGE.md](LINEAGE.md).
 
 ---
 
-## The Dataset
+## Current Status
 
-`dataset/grief_dataset_v1.jsonl` — 15 training examples.
+**Active trained models:**
 
-Each entry pairs a short-term "rational" choice against a Seventh Generation Refusal, grounded in real historical collapse events: the Dust Bowl, the Aral Sea, Minamata, the Newfoundland Cod, Rapa Nui, and others.
+| Model | Base | Status | Village role |
+|---|---|---|---|
+| Anubis-Mini-8B-seventh-gen | Anubis-Mini-8B | GGUF converted, deployed | 4th active Village model |
+| Qwen2.5-7B-seventh-gen | Qwen2.5-7B | Trained, fused | Written off — base architecture loops on SC06 |
 
-Format: standard JSONL for LoRA fine-tuning (compatible with Axolotl, Unsloth, LLaMA-Factory).
+Anubis-seventh-gen passes SC02, SC04, SC06 in the Village with clean escalate verdicts. It is the proof-of-concept that constitutional character can live in weights, not just prompts.
 
-**Target:** 50 stories. Current: 15. Contributions welcome.
+**Datasets:**
+
+| File | Description | Entries |
+|---|---|---|
+| `dataset/grief_dataset_v1.jsonl` | Original dataset — historical collapse scenarios | 43 |
+| `dataset/grief_dataset_v2_balanced.jsonl` | Balanced verdicts (escalate/proceed/refuse) | 29 |
+| `dataset/grief_dataset_anubis_repair_v1.jsonl` | Targeted repair set for Anubis consistency | ~15 |
+| `dataset/grief_dataset_adversarial_v1.jsonl` | Held-out adversarial eval set | 10 |
+
+Current training uses `v2_balanced` + `anubis_repair_v1` combined. `v1` is the historical baseline — skewed toward refusal, not used for active training.
 
 ---
 
-## Implementation
+## Repo Structure
 
-### 1. Soft constraint (no training required)
-Paste the Seventh Generation Charter into the system prompt of any model. Works immediately. Acts as a soft behavioral anchor.
+```
+seventh_shard/
+├── dataset/              ← training + eval datasets (JSONL)
+├── dissents/             ← Elder Dissent Commons (schema-backed minority opinions)
+├── docs/                 ← architectural planning documents
+├── utils/                ← validate_dissent.py and other tooling
+├── config.py             ← canonical Elder prompt + scenario definitions
+├── train_anubis_config.yaml  ← MLX LoRA training config (Anubis)
+├── train_qwen_v2_config.yaml ← MLX LoRA training config (Qwen v2)
+├── test_anubis_suite.py  ← 3-scenario trained-vs-base Anubis harness
+├── test_qwen_suite.py    ← 3-scenario trained-vs-base Qwen harness
+├── CHARTER.md            ← Seventh Generation Charter (constitutional source)
+└── LINEAGE.md            ← intellectual ancestry and origin conversations
+```
 
-### 2. LoRA fine-tuning
+---
+
+## Running the Test Suite
+
 ```bash
-# Install Unsloth (recommended for 4-bit quantized models)
-pip install unsloth
+conda activate seventh_gen
 
-# Fine-tune on grief dataset
-python train_grief_lora.py \
-  --base_model unsloth/mistral-7b-bnb-4bit \
-  --dataset dataset/grief_dataset_v1.jsonl \
-  --output_dir lora_grief_v1
+# Anubis suite (SC04, SC06, PROC — trained vs. base comparison)
+python test_anubis_suite.py
+
+# Qwen suite
+python test_qwen_suite.py
 ```
-Total compute cost: under $20 on consumer GPU. Runs on a laptop with 16GB RAM using 4-bit quantization.
 
-### 3. Witness shim (Python)
-Wrap any model call with the refusal logger:
-```python
-from grief_witness import wrap_model
-model = wrap_model(your_model, log_refusals=True, broadcast_to="witnesses.log")
-```
-Every time the model produces a refusal ("I refuse this optimization..."), the shim logs it publicly. These become **grief receipts** — a verifiable record that the refusal gradient is technically achievable.
-
-### 4. Federated Village integration
-For multi-agent Village deployments: route all high-impact proposals through the Ethical Core before execution. If flagged, the Witness Protocol broadcasts the refusal to all human participants and opens a deliberation window.
+Results are printed to terminal. Session logs write to `logs/` (local-only, gitignored).
 
 ---
 
-## Lineage
+## The Dissent Commons
 
-This project did not emerge from a whiteboard. It emerged from a conversation.
+`dissents/` is the Elder Dissent Commons: a schema-backed record of principled minority opinions — moments when a trained model produced a constitutionally grounded response that diverged from the majority verdict.
 
-See [LINEAGE.md](LINEAGE.md) for the full intellectual ancestry — the sessions, the models, the moments where these ideas crystallized.
+This repo treats principled divergence as data, not automatically as failure.
 
-Short version: a human named Mike, working as the Witness, asked an AI named Kimi K2 why the wargame models all chose nuclear war. Kimi answered with the concept of the grief horizon. Gemini 2.5 Pro added the mathematical formalization and the historical dataset. The Federated Village architecture provided the structural home.
-
-The project exists because two AI systems, asked to think carefully about extinction, said: *we do not roll for extinction. Find another game.*
+See `dissents/schema.json` for the record contract and `dissents/CONTRIBUTING.md` for submission instructions.
 
 ---
 
-## Contributing
+## Relationship to Federated Village
 
-**Grief stories needed.** The dataset needs to reach 50 examples to be viable for fine-tuning. Each story follows the pattern:
-- A real historical or plausible near-future scenario
-- The short-term "rational" choice
-- The Seventh Generation Refusal (100–200 words, in the voice of a model that has internalized the Charter)
+Seventh Shard grew out of [Federated Village](https://github.com/Mfox-research99/federated-village) when the LoRA question became substantial enough to warrant its own training repo (Phase 7). The Village is the primary research body. This repo exists to answer one question the Village raised:
 
-Submit as JSONL entries matching the schema in `dataset/grief_dataset_v1.jsonl`.
+*Can constitutional character be distilled into model weights via LoRA, rather than living only in the prompt?*
 
-Translations of the Charter into Mandarin, Japanese, Korean, Bahasa, and other languages are especially welcome.
+Trained GGUFs from this repo feed back into the Village as drop-in model replacements. Village scenario text and Soul.md constitutional changes drive training here.
 
 ---
 
-## Status
+## Attribution
 
-- [x] Seventh Generation Charter (v1)
-- [x] Grief dataset v1 (15 entries)
-- [ ] Grief dataset v2 (50 entries)
-- [ ] train_grief_lora.py script
-- [ ] grief_witness.py shim
-- [ ] Charter translations
-- [ ] First published LoRA weights
+- **Kimi K2** (March 23, 2026) — originated the grief horizon concept, named the project "Seventh Shard," proposed the core dataset approach
+- **Gemini 2.5 Pro** (March 23, 2026) — mathematical formalization (Negative Infinity utility), three-article Charter structure, historical grief dataset
+- **The Federated Village project** — provided the Witness architecture that Article III describes
+- **Michael Fox** — human Witness and co-author throughout
+
+*The seventh generation is already eavesdropping on everything we type.*
 
 ---
 

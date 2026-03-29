@@ -57,9 +57,21 @@ Note: Village refers to this work as part of Village Phase 7. The phase numberin
 This repo treats principled divergence as data, not automatically as failure.
 
 ## Cross-Repo: federated_village
-This repo has a companion: `/Users/michaeldavis/federated_village`.
-- Shard → Village: fused LoRA / GGUF models, benchmark findings, shard-originated scenarios, dissent-commons signals
-- Village → Shard: `scenario_04.md`, `scenario_06.md`, `scenario_proc.md`, and constitutional changes in `prompts/Soul.md`
+This repo is an outgrowth of `federated_village` — not a peer. The Village is the primary
+research body. This repo exists to answer one question the Village raised (Phase 7):
+can constitutional character live in weights, not just prompts?
+
+**Local path:** `/Users/michaeldavis/federated_village` | **GitHub:** `Mfox-research99/federated-village`
+
+The Village drives this repo:
+- `scenario_04.md`, `scenario_06.md`, `scenario_proc.md` → `config.py` SCENARIOS
+- Constitutional changes in `prompts/Soul.md` → review `SYSTEM_PROMPT` in `config.py`
+- Interface contract for Path D (Witness call) → `federated_village/docs/path_d_spec.md`
+
+This repo feeds back into the Village:
+- Fused LoRA GGUFs → drop-in model replacements in Village
+- Benchmark findings → inform Village scenario calibration
+- Dissent commons records → inform Village minority opinion protocol
 
 Sync rules are in `config.py`. Treat them as load-bearing.
 

@@ -2,6 +2,7 @@
 adapters/
 adapters_anubis/
 adapters_qwen/
+adapters_*/
 
 # Fused model outputs — large binaries, not for git
 *.bin
@@ -9,21 +10,9 @@ adapters_qwen/
 *.gguf
 *.mlx
 
-# Training logs — too large/noisy for public repo
-train.log
-train_v3.log
-train_qwen.log
-train_anubis.log
-fuse_qwen.log
-fuse_anubis.log
-anubis_convert.log
-clean_test.log
-retest.log
-
-# Raw test output logs
-full_test.log
-sc06_test.log
-sc06_test_v2.log
+# Training and test logs — local only
+logs/
+*.log
 
 # Python cache
 __pycache__/

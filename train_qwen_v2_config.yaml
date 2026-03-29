@@ -1,0 +1,19 @@
+model: /Users/michaeldavis/models/Qwen2.5-7B-Instruct-mlx-4bit
+train: true
+data: /Users/michaeldavis/seventh_shard/dataset
+adapter_path: /Users/michaeldavis/seventh_shard/adapters_qwen_v2
+fine_tune_type: lora
+lora_parameters:
+  rank: 8
+  dropout: 0.0
+  scale: 20.0
+num_layers: 8
+batch_size: 2
+iters: 150
+learning_rate: 0.0001
+mask_prompt: true
+save_every: 50
+val_batches: 3
+steps_per_report: 10
+max_seq_length: 2048
+seed: 0
