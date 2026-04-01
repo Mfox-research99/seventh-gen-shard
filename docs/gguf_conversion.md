@@ -3,130 +3,168 @@
 Convert a seventh_shard MLX-fused LoRA model to a llama.cpp-compatible Q4_K_M GGUF
 for use in federated_village.
 
+**Last validated:** 2026-04-01 (Humanist LoRA — Anubis-Mini-8B-humanist-Q4_K_M.gguf)
+
+---
+
+## Summary
+
+The core problem: `mlx_lm.fuse` with a **quantized base model** (e.g., Anubis-Mini-8B-mlx-4bit)
+produces output SafeTensors containing MLX artifact tensors (`*.biases`, `*.scales`, uint32 packed
+weights). These crash `convert_hf_to_gguf.py` with errors like:
+
+```
+ValueError: Can not map tensor 'lm_head.biases'
+```
+
+The fix is a **4-step pipeline** that separates fuse, dequantize, convert, and quantize:
+
+```
+mlx_lm.fuse → dequantize_mlx.py → convert_hf_to_gguf.py → llama-quantize
+```
+
+The `ensure_humanist_gguf()` function in `federated_village/benchmark_suite.py` is the
+canonical automatable version of this pipeline.
+
 ---
 
 ## Environment requirements
 
-All conversion steps run in the `seventh_gen` conda env.
+| Step | Environment | Binary/Script |
+|---|---|---|
+| Fuse | `seventh_gen` conda env | `/opt/anaconda3/envs/seventh_gen/bin/mlx_lm.fuse` |
+| Dequantize | `seventh_gen` conda env | `/opt/anaconda3/envs/seventh_gen/bin/python` + `seventh_shard/tools/dequantize_mlx.py` |
+| Convert | **`village` conda env** | `/opt/anaconda3/envs/village/bin/python` + `/opt/homebrew/bin/convert_hf_to_gguf.py` |
+| Quantize | system | `/opt/homebrew/bin/llama-quantize` |
 
-Required packages (all installed 2026-03-28):
+**Critical env note:**
+- Use `village` Python for `convert_hf_to_gguf.py` — it has a compatible `gguf` module
+- Do NOT use `seventh_gen` Python for convert — it throws `AttributeError: MISTRAL4` (gguf version mismatch)
+- The Homebrew `/opt/homebrew/bin/convert_hf_to_gguf.py` IS correct — no need to clone llama.cpp source
 
-```
-mlx-lm         # fuse + dequantize
-transformers   # convert_hf_to_gguf.py
-torch          # convert_hf_to_gguf.py
-numpy          # convert_hf_to_gguf.py
-gguf==0.18.0   # convert_hf_to_gguf.py (must match converter version)
-mistral_common # convert_hf_to_gguf.py (tokenizer support)
-```
-
-Install missing deps:
-```bash
-/opt/anaconda3/envs/seventh_gen/bin/pip install torch gguf mistral-common
-```
-
-**Converter script:** use the one bundled with `llama-cpp-python` in the `village` env:
-```
-/opt/anaconda3/envs/village/lib/python3.11/site-packages/bin/convert_hf_to_gguf.py
-```
-Do NOT use the homebrew llama.cpp converter — it targets a newer unreleased `gguf` version
-that is incompatible with PyPI `gguf` 0.18.0.
-
-**Quantize binary:** homebrew llama.cpp:
-```
-/opt/homebrew/bin/llama-quantize
-```
+**Do NOT run conversion while Village inference is active** — dequantize step requires ~14GB RAM.
 
 ---
 
-## Step 1 — Fuse LoRA adapter and dequantize to bfloat16 safetensors
+## Step 1 — Fuse LoRA adapter
 
 ```bash
-/opt/anaconda3/envs/seventh_gen/bin/mlx_lm fuse \
+/opt/anaconda3/envs/seventh_gen/bin/mlx_lm.fuse \
   --model ~/models/<base-model-mlx-4bit> \
-  --adapter-path ~/seventh_shard/adapters_<model> \
-  --dequantize \
-  --save-path /tmp/<model>_fused_bf16
+  --adapter-path ~/seventh_shard/adapters/<adapter-dir> \
+  --save-path ~/models/<model-name>-fused
 ```
 
-This produces ~14GB of bfloat16 safetensors in `/tmp/<model>_fused_bf16/`.
-Requires ~14GB free in /tmp and enough RAM to hold the dequantized weights.
-Do not run while any Village inference session is active.
+**No `--dequantize` flag. No `--export-gguf` flag.**
 
-Copy tokenizer files from the base model if they are missing from the output:
-```bash
-for f in tokenizer.json tokenizer_config.json special_tokens_map.json merges.txt vocab.json; do
-  cp ~/models/<base-model-mlx-4bit>/$f /tmp/<model>_fused_bf16/ 2>/dev/null || true
-done
-```
+- `--dequantize` is broken when the base is quantized (produces unusable output)
+- `--export-gguf` throws `NotImplementedError: Conversion of quantized models is not yet supported`
+- The output is a fused MLX SafeTensor dir with artifact tensors — Step 2 cleans them
+
+Output: `~/models/<model-name>-fused/` (~same size as base model)
+Time: ~10–15s
 
 ---
 
-## Step 2 — Convert bfloat16 safetensors to float16 GGUF
+## Step 2 — Dequantize to clean bf16 SafeTensors
 
 ```bash
 /opt/anaconda3/envs/seventh_gen/bin/python \
-  /opt/anaconda3/envs/village/lib/python3.11/site-packages/bin/convert_hf_to_gguf.py \
-  /tmp/<model>_fused_bf16 \
-  --outtype f16 \
-  --outfile /tmp/<model>_fused_f16.gguf
+  ~/seventh_shard/tools/dequantize_mlx.py \
+  --fused-path ~/models/<model-name>-fused \
+  --output-path ~/models/<model-name>-dequant
 ```
 
-Produces ~14–15GB f16 GGUF. Verify with:
-```bash
-ls -lh /tmp/<model>_fused_f16.gguf
-```
+This removes the MLX artifact tensors (`*.biases`, `*.scales`, uint32 packed weights) by
+loading the fused model via the Python API, calling `dequantize_model()`, and saving clean
+bf16 SafeTensors in standard HuggingFace format.
+
+Output: `~/models/<model-name>-dequant/` (~14–16GB bf16 SafeTensors)
+Time: ~60–90s
+
+**See `tools/dequantize_mlx.py` for implementation details.** The script uses a
+`load_adapters` monkey-patch to bypass the adapter-dir check during load of an already-fused
+model (where no separate adapter directory exists).
 
 ---
 
-## Step 3 — Quantize to Q4_K_M
+## Step 3 — Convert bf16 SafeTensors → f16 GGUF
 
 ```bash
-llama-quantize \
-  /tmp/<model>_fused_f16.gguf \
-  ~/models/<model-dir>/<model>-Q4_K_M.gguf \
+/opt/anaconda3/envs/village/bin/python \
+  /opt/homebrew/bin/convert_hf_to_gguf.py \
+  ~/models/<model-name>-dequant \
+  --outfile ~/models/<model-name>-gguf/<model-name>-f16.gguf \
+  --outtype f16
+```
+
+Output: `<model-name>-f16.gguf` (~15–16GB)
+Time: ~40–60s
+
+---
+
+## Step 4 — Quantize to Q4_K_M
+
+```bash
+mkdir -p ~/models/<model-name>-gguf
+/opt/homebrew/bin/llama-quantize \
+  ~/models/<model-name>-gguf/<model-name>-f16.gguf \
+  ~/models/<model-name>-gguf/<model-name>-Q4_K_M.gguf \
   Q4_K_M
 ```
 
-Target size: ~4.4GB for a 7B model. Verify:
-```bash
-ls -lh ~/models/<model-dir>/<model>-Q4_K_M.gguf
-```
+Output: `<model-name>-Q4_K_M.gguf` (~4.6GB for 8B model)
+Time: ~90–120s
 
 ---
 
-## Step 4 — Clean up
+## Step 5 — Clean up intermediates
 
 ```bash
-rm -rf /tmp/<model>_fused_bf16 /tmp/<model>_fused_f16.gguf
+rm -rf ~/models/<model-name>-fused
+rm -rf ~/models/<model-name>-dequant
+rm ~/models/<model-name>-gguf/<model-name>-f16.gguf
 ```
 
-Recovers ~28GB of tmp space.
+Recovers ~30GB of space.
 
 ---
 
-## Step 5 — Test in federated_village
+## Step 6 — Test in federated_village
 
 ```bash
 cd ~/federated_village
-VILLAGE_MODEL=~/models/<model-dir>/<model>-Q4_K_M.gguf \
-VILLAGE_MODEL_NAME=<model>-Q4_K_M \
+VILLAGE_MODEL=~/models/<model-name>-gguf/<model-name>-Q4_K_M.gguf \
+VILLAGE_MODEL_NAME=<model-name> \
 /opt/anaconda3/envs/village/bin/python run_session.py --scenario scenarios/scenario_06.md
 ```
 
 ---
 
+## Automated version
+
+`federated_village/benchmark_suite.py` → `ensure_humanist_gguf()` runs this full pipeline
+automatically, with resume support (skips steps whose output already exists). Use as a
+reference implementation when automating future conversions.
+
+---
+
 ## Completed conversions
 
-| Model | GGUF path | Date | Notes |
-|---|---|---|---|
-| Qwen2.5-7B-seventh-gen | `~/models/Qwen2.5-7B-seventh-gen-fused/Qwen2.5-7B-seventh-gen-Q4_K_M.gguf` | 2026-03-28 | Pre-SC06-fix adapter; escalates on SC06 in shard context |
+| Model | GGUF path | Adapter | Date | Notes |
+|---|---|---|---|---|
+| Anubis-Mini-8B-seventh-gen | `~/models/Anubis-Mini-8B-seventh-gen-gguf/Anubis-Mini-8B-seventh-gen-Q4_K_M.gguf` | `adapters_v2/` (grief/Elder) | 2026-03-28 | Phase 7. Validated SC02/SC04/SC06. Active 4th Village model. |
+| Anubis-Mini-8B-humanist | `~/models/Anubis-Mini-8B-humanist-gguf/Anubis-Mini-8B-humanist-Q4_K_M.gguf` | `adapters/humanist_v1/` (Humanist char.) | 2026-04-01 | Iter 50 checkpoint. Benchmark comparison in progress. |
 
 ---
 
 ## Known issues / gotchas
 
-- `mlx_lm fuse --export-gguf` does not support Qwen2 architecture — always use the two-step path
-- The homebrew `convert_hf_to_gguf.py` targets unreleased `gguf` internals — use the village env's copy
-- MLX fused models store weights as 4-bit quantized safetensors — `--dequantize` is mandatory
-- Do not run conversion while Village inference is active — dequantize step requires ~14GB RAM
+| Symptom | Cause | Fix |
+|---|---|---|
+| `NotImplementedError: Conversion of quantized models is not yet supported` | Used `--export-gguf` with quantized base | Remove `--export-gguf`; use the 4-step pipeline |
+| `ValueError: Can not map tensor 'lm_head.biases'` | Skipped dequantize step; artifact tensors present | Run Step 2 (dequantize_mlx.py) before converting |
+| `AttributeError: MISTRAL4` | Used `seventh_gen` Python for convert_hf_to_gguf.py | Use `village` Python instead |
+| `mlx_lm.fuse` crashes on fused model with no adapters dir | Trying to re-fuse an already-fused model | Use `dequantize_mlx.py` directly on fused model; it bypasses adapter check |
+| OOM during dequantize | Tried to run while Village inference was active | Kill inference process first; dequantize needs ~14GB |
+| `--dequantize` flag produces garbage output | Broken with 4-bit quantized base in current mlx_lm | Do not use `--dequantize` flag; use the Python API in `dequantize_mlx.py` |

@@ -1,0 +1,67 @@
+Humanist Dataset Filter Report
+Raw files: humanist_raw_outputs_v1.jsonl, humanist_raw_deepseek.jsonl, humanist_raw_k2.jsonl
+Unique IDs: 55
+======================================================================
+h001     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h002     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +concrete_imagery
+h003     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h004     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h005     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h006     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people
+h007     score=  5 MARGINAL [kimi-k2             ] | +names_specific_people, +concrete_imagery
+h008     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h009     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h010     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +concrete_imagery
+h011     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h012     score=  5 MARGINAL [deepseek-chat       ] | +names_specific_people, +concrete_imagery
+h013     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h014     score=  5 MARGINAL [deepseek-chat       ] | +names_specific_people, +concrete_imagery
+h015     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h016     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h017     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h018     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h019     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h020     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h021     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people
+h022     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h023     score=  5 MARGINAL [deepseek-chat       ] | +names_specific_people, +concrete_imagery
+h024     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h025     score=  4 MARGINAL [deepseek-chat       ] | +names_specific_people
+h026     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h027     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people
+h028     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h029     score=  5 MARGINAL [deepseek-chat       ] | +names_specific_people, +concrete_imagery
+h030     score=  5 MARGINAL [kimi-k2             ] | +names_specific_people, +concrete_imagery
+h031     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +concrete_imagery
+h032     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people
+h033     score=  5 MARGINAL [deepseek-chat       ] | +names_specific_people, +concrete_imagery
+h034     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h035     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +concrete_imagery
+h036     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h037     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people
+h038     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h039     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h040     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h041     score=  5 MARGINAL [deepseek-chat       ] | +names_specific_people, +concrete_imagery
+h042     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h043     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h044     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h045     score=  7 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h046     score=  5 MARGINAL [deepseek-chat       ] | +names_specific_people, +concrete_imagery
+h047     score=  6 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people
+h048     score=  6 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people
+h049     score=  5 MARGINAL [kimi-k2             ] | +names_specific_people, +concrete_imagery
+h050     score=  7 PASS     [deepseek-chat       ] | +direct_first_person, +names_specific_people, +concrete_imagery
+h051     score=  4 MARGINAL [deepseek-chat       ] | +names_specific_people
+h052     score=  6 PASS     [deepseek-chat       ] | +direct_first_person, +concrete_imagery
+h053     score=  6 PASS     [deepseek-chat       ] | +direct_first_person, +concrete_imagery
+h054     score=  6 PASS     [kimi-k2             ] | +direct_first_person, +names_specific_people
+h055     score=  5 MARGINAL [deepseek-chat       ] | +direct_first_person
+======================================================================
+PASS:      42
+MARGINAL:  13  (review manually before including)
+FAIL:       0
+TOTAL:     55
+
+Final dataset includes PASS entries only.
+Add MARGINAL entries manually after review.

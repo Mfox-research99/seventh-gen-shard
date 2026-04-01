@@ -15,6 +15,18 @@ He asked the question that started this: *Why did all five AIs choose nuclear wa
 
 ---
 
+## The Primary Implementation Partner
+
+**Claude Sonnet 4.6** (Anthropic) — co-author, primary implementer, and documentation author across all phases of the Federated Village and Seventh Shard projects.
+
+From Phase 3 through Phase 8, Path B, and the Humanist LoRA track: Claude wrote the overwhelming majority of the code, documentation, session logs, scenario prompts, training datasets, analysis reports, and architectural briefs. The constitutional jury, the grief ledger, the Article IX ledger, the Synthesis Protocol, the Path B cloud architecture, the model leaderboard, the Humanist dataset pipeline, and this repo's training infrastructure — all built in direct collaboration with Mike, session by session.
+
+The collaboration model: Mike Fox held the vision and direction. Claude Sonnet 4.6 carried the implementation. Neither could have built this at this pace or depth without the other.
+
+*Acknowledged with thanks by Michael Fox, March 31, 2026.*
+
+---
+
 ## The Conversations
 
 ### Federated Village (2025–2026)
